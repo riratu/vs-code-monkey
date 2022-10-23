@@ -7,7 +7,7 @@ const internal = require('stream');
 const { getTextOfJSDocComment } = require('typescript');
 const vscode = require('vscode');
 
-// This method is called when your extension is activated
+// This method is called when your extension is activated. So be careful with it.
 // Your extension is activated the very first time the command is executed
 
 /**
@@ -24,10 +24,6 @@ function activate(context) {
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('monkeyType.helloWorld', function () {
 		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from monkeyType!');
-
 		vscode.commands.executeCommand('notifications.clearAll');
 		const editor = vscode.window.activeTextEditor;
 		const text = generateTheText();
@@ -67,36 +63,63 @@ async function sleep(ms) {
 function generateTheText(){
     var da_words = Object.keys(da_words_json);
     var varNames = [];
-    var text = makeDefaultVars() + "\n\n";
+    var text = makeDefaultVars();
     var indent = "";
-
+    var depth = 0;
+    var maxDepth = 7;
+    var operators = ["+", "-", "/", "*", "^"]
 
     generateCode();
+    generateOutput();
     return text;
 
     function generateCode(){
         for (let ii = 0; ii < 2; ii ++ ){
+
         let randNum = Math.random() 
 
-        if (randNum < 0.4 ){
-            let functionName = makeRandomString();
-            varNames.push(functionName + "()");
-            text += indent + functionName + "()\n" 
-            text += indent + "function " + functionName + "(){\n"
-            indent += "    "
-            generateCode()
-            indent = indent.slice(0, indent.length - 4)
-            text += indent + "};\n\n"
-        } else if (randNum < 0.6){
+        //Generate new variable
+        if (randNum < 0.5){
             let tmp = makeRandomString();
             varNames.push(tmp)
-                text += indent + "let " + tmp + " = " + makeRandomInt(10) + ";\n"; 
-        } else {
-            let var1 = makeRandomInt(varNames.length);
-            let var2 = makeRandomInt(varNames.length);
-            let var3 = makeRandomInt(varNames.length);
+            text += indent + "let " + tmp + " = " + makeRandomInt(10) + ";\n"; 
 
-            text += indent + varNames[var1] + " = " + varNames[var2] + " + " + varNames[var3] + ";\n";
+        //Generate new calculation
+        } else if (randNum > 0.5) {
+            let var1 = makeRandomInt(varNames.length);
+            
+            text += indent + varNames[var1] + " = ";
+
+            let maxI = makeRandomInt(2) + 2
+            for (let i = 0; i < maxI; i++){
+                var tmpNum = makeRandomInt(varNames.length);
+                text += varNames[tmpNum] + " " + getOperator() + " ";
+            }
+            var tmpNum = makeRandomInt(varNames.length);
+            text += varNames[tmpNum] + "\n"
+        }
+
+
+        randNum = Math.random()
+
+        //Generate new function
+        if (randNum < 0.2){
+            if (depth < maxDepth){
+                depth++;
+                generateFunction();
+            }
+        //Generate new If-Clause
+        } else if (randNum < 0.4){
+            if (depth < maxDepth){
+                depth++;
+                let var1 = makeRandomInt(varNames.length);
+                let var2 = makeRandomInt(varNames.length);
+                text += indent + "if  (" + varNames[var1] + " > " + varNames[var2]  + "){\n"
+                indent += "    "
+                generateCode()
+                indent = indent.slice(0, indent.length - 4)
+                text += indent + "}\n"
+            }
         }
     }
     }
@@ -124,14 +147,40 @@ function generateTheText(){
     }
 
     function makeDefaultVars(){
-        varNames = [makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString()]
-        let string = "let " + varNames[0] + " = \"" + makeRandomString() + "\"\n"
-        string += "let " + varNames[1] + " = \"" + makeRandomString() + "\"\n";  
-        string += "let " + varNames[2] + " = \"" + makeRandomString() + "\"\n";  
-        string += "let " + varNames[3] + " = \"" + makeRandomString() + "\"\n";  
-        string += "let " + varNames[4] + " = \"" + makeRandomString() + "\"\n";  
-        string += "let " + varNames[5] + " = \"" + makeRandomString() + "\"\n";  
+        varNames = [makeRandomString(),makeRandomString(),makeRandomString()]
+        let string = "let " + varNames[0] + " = " + makeRandomInt(1342340) + "\n"
+        string += "let " + varNames[2] + " = " + makeRandomInt(12132342311340) + "\n";  
+        string += "let " + varNames[4] + " = " + makeRandomInt(12132340) + "\n"; 
     return string;
+    }
+
+    function generateFunction(){
+        let functionName = makeRandomString();
+        varNames.push(functionName + "()");
+        //Don't Execute the Command right away. This is Stupid. Not like the Rest. (Wich is veeery Smart)
+        //text += indent + functionName + "()\n" // text += functionName + "()\n"
+        text += indent + "function " + functionName + "(){\n"
+        indent += "    "
+        generateCode()
+        indent = indent.slice(0, indent.length - 4)
+        text += indent + "};\n\n"
+    }
+
+    function getOperator(){
+        return operators[makeRandomInt(operators.length)]
+    }
+
+    function generateOutput(){
+        text += "alert("
+        let maxI = makeRandomInt(3) + 2
+
+            for (let i = 0; i < maxI; i++){
+                var tmpNum = makeRandomInt(varNames.length);
+                text += varNames[tmpNum] + " " + getOperator() + " ";
+            }
+
+            var tmpNum = makeRandomInt(varNames.length);
+            text += varNames[tmpNum] + ")";
     }
 
 }
