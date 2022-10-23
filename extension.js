@@ -1,5 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+
+const da_words_json = require('./words_dictionary.json')
+
 const internal = require('stream');
 const { getTextOfJSDocComment } = require('typescript');
 const vscode = require('vscode');
@@ -40,7 +43,7 @@ function activate(context) {
 				active.insert(pos, text[i]);
 				});
 				i += 1; 
-				setTimeout(typeCharacter, 30);
+				setTimeout(typeCharacter, 40);
 			};
 			typeCharacter()
 		
@@ -62,65 +65,74 @@ async function sleep(ms) {
 }
 
 function generateTheText(){
-var varNames = [];
-var text = makeDefaultVars() + "\n\n";
-var indent = "";
+    var da_words = Object.keys(da_words_json);
+    var varNames = [];
+    var text = makeDefaultVars() + "\n\n";
+    var indent = "";
 
-generateCode();
-return text;
 
-function generateCode(){
-	for (let ii = 0; ii < 2; ii ++ ){
-    let randNum = Math.random() 
+    generateCode();
+    return text;
 
-    if (randNum < 0.4 ){
-        let functionName = makeRandomString();
-        varNames.push(functionName + "()");
-        text += indent + functionName + "()\n" 
-        text += indent + "function " + functionName + "(){\n"
-		indent += "    "
-        generateCode()
-		indent = indent.slice(0, indent.length - 4)
-        text += indent + "}\n\n"
-    } else if (randNum < 0.6){
-        let tmp = makeRandomString();
-        varNames.push(tmp)
-            text += indent + "let " + tmp + " = " + makeRandomInt(10) + "\n"; 
-    } else {
-        let var1 = makeRandomInt(varNames.length);
-        let var2 = makeRandomInt(varNames.length);
-        let var3 = makeRandomInt(varNames.length);
+    function generateCode(){
+        for (let ii = 0; ii < 2; ii ++ ){
+        let randNum = Math.random() 
 
-        text += indent + varNames[var1] + " = " + varNames[var2] + " + " + varNames[var3] + "\n";
+        if (randNum < 0.4 ){
+            let functionName = makeRandomString();
+            varNames.push(functionName + "()");
+            text += indent + functionName + "()\n" 
+            text += indent + "function " + functionName + "(){\n"
+            indent += "    "
+            generateCode()
+            indent = indent.slice(0, indent.length - 4)
+            text += indent + "};\n\n"
+        } else if (randNum < 0.6){
+            let tmp = makeRandomString();
+            varNames.push(tmp)
+                text += indent + "let " + tmp + " = " + makeRandomInt(10) + ";\n"; 
+        } else {
+            let var1 = makeRandomInt(varNames.length);
+            let var2 = makeRandomInt(varNames.length);
+            let var3 = makeRandomInt(varNames.length);
+
+            text += indent + varNames[var1] + " = " + varNames[var2] + " + " + varNames[var3] + ";\n";
+        }
     }
-}
- }
-
- function makeRandomString() {
-    var result           = '';
-    var characters       = 'abcdefghijklmnopqrstuvwxyz';
-    var charactersLength = characters.length;
-    let stringLength = makeRandomInt()+5
-    for ( var i = 0; i < stringLength; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-    return result;
- }
- 
- function makeRandomInt(length = 5) {
-    return (Math.floor(Math.random()*length))
- }
 
- function makeDefaultVars(){
-    varNames = [makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString()]
-    let string = "let " + varNames[0] + " = \"" + makeRandomString() + "\"\n"
-    string += "let " + varNames[1] + " = \"" + makeRandomString() + "\"\n";  
-    string += "let " + varNames[2] + " = \"" + makeRandomString() + "\"\n";  
-    string += "let " + varNames[3] + " = \"" + makeRandomString() + "\"\n";  
-    string += "let " + varNames[4] + " = \"" + makeRandomString() + "\"\n";  
-    string += "let " + varNames[5] + " = \"" + makeRandomString() + "\"\n";  
-  return string;
- }
+
+
+    function makeRandomString() {
+        let randInt = makeRandomInt(da_words.length)
+        return da_words[randInt];
+    }
+
+    function makeRandomString2() {
+        var result           = '';
+        var characters       = 'abcdefghijklmnopqrstuvwxyz';
+        var charactersLength = characters.length;
+        let stringLength = makeRandomInt()+5
+        for ( var i = 0; i < stringLength; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+    
+    function makeRandomInt(length = 5) {
+        return (Math.floor(Math.random()*length))
+    }
+
+    function makeDefaultVars(){
+        varNames = [makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString(),makeRandomString()]
+        let string = "let " + varNames[0] + " = \"" + makeRandomString() + "\"\n"
+        string += "let " + varNames[1] + " = \"" + makeRandomString() + "\"\n";  
+        string += "let " + varNames[2] + " = \"" + makeRandomString() + "\"\n";  
+        string += "let " + varNames[3] + " = \"" + makeRandomString() + "\"\n";  
+        string += "let " + varNames[4] + " = \"" + makeRandomString() + "\"\n";  
+        string += "let " + varNames[5] + " = \"" + makeRandomString() + "\"\n";  
+    return string;
+    }
 
 }
 
