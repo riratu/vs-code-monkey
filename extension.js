@@ -3,6 +3,7 @@
 
 const da_words_json = require('./words_dictionary.json')
 
+const { resolve } = require('path');
 const internal = require('stream');
 const { getTextOfJSDocComment } = require('typescript');
 const vscode = require('vscode');
@@ -22,7 +23,7 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('monkeyType.helloWorld', function () {
+	let disposable = vscode.commands.registerCommand('monkeyType.monkey', function () {
 		// The code you place here will be executed every time your command is executed
 		vscode.commands.executeCommand('notifications.clearAll');
 		const editor = vscode.window.activeTextEditor;
@@ -68,6 +69,7 @@ function generateTheText(){
     var depth = 0;
     var maxDepth = 7;
     var operators = ["+", "-", "/", "*", "^"]
+    var comperatorOperators = ["==", "!=", ">", "<", ">=", "<=", "===", "!=="]
 
     generateCode();
     generateOutput();
@@ -82,49 +84,57 @@ function generateTheText(){
         if (randNum < 0.5){
             let tmp = makeRandomString();
             varNames.push(tmp)
-            text += indent + "let " + tmp + " = " + makeRandomInt(10) + ";\n"; 
+            text += indent + "var " + tmp + " = " + makeRandomInt(10) + ";\n"; 
 
         //Generate new calculation
-        } else if (randNum > 0.5) {
-            let var1 = makeRandomInt(varNames.length);
-            
-            text += indent + varNames[var1] + " = ";
-
-            let maxI = makeRandomInt(2) + 2
-            for (let i = 0; i < maxI; i++){
-                var tmpNum = makeRandomInt(varNames.length);
-                text += varNames[tmpNum] + " " + getOperator() + " ";
-            }
-            var tmpNum = makeRandomInt(varNames.length);
-            text += varNames[tmpNum] + "\n"
+        } else if (randNum > 0.5) {     
+            let newVar = makeRandomString()
+            varNames.push(newVar)
+            text += indent + newVar + " = ";
+            text += generateCalculation();
+            text += "\n"
         }
 
 
         randNum = Math.random()
 
         //Generate new function
-        if (randNum < 0.2){
+        if (randNum < 0.3){
             if (depth < maxDepth){
                 depth++;
                 generateFunction();
             }
         //Generate new If-Clause
-        } else if (randNum < 0.4){
+        } else if (randNum < 0.6){
             if (depth < maxDepth){
                 depth++;
                 let var1 = makeRandomInt(varNames.length);
                 let var2 = makeRandomInt(varNames.length);
-                text += indent + "if  (" + varNames[var1] + " > " + varNames[var2]  + "){\n"
+                text += indent + "if  (" + varNames[var1] + " " + getComperatorOperator() + " " + varNames[var2]  + "){\n"
                 indent += "    "
                 generateCode()
                 indent = indent.slice(0, indent.length - 4)
-                text += indent + "}\n"
+                text += indent + "}\n\n"
             }
         }
     }
     }
 
+    function generateCalculation(){
+        let tmpText = "";
+        let maxI = makeRandomInt(2) + 2
+            for (let i = 0; i < maxI; i++){
+                var tmpNum = makeRandomInt(varNames.length);
+                tmpText += varNames[tmpNum] + " " + getOperator() + " ";
+            }
+            var tmpNum = makeRandomInt(varNames.length);
+            tmpText += varNames[tmpNum]
+        return tmpText;
+    }
 
+    function getComperatorOperator(){
+        return comperatorOperators[makeRandomInt(operators.length)]
+    }
 
     function makeRandomString() {
         let randInt = makeRandomInt(da_words.length)
@@ -148,9 +158,9 @@ function generateTheText(){
 
     function makeDefaultVars(){
         varNames = [makeRandomString(),makeRandomString(),makeRandomString()]
-        let string = "let " + varNames[0] + " = " + makeRandomInt(1342340) + "\n"
-        string += "let " + varNames[2] + " = " + makeRandomInt(12132342311340) + "\n";  
-        string += "let " + varNames[4] + " = " + makeRandomInt(12132340) + "\n"; 
+        let string = "var " + varNames[0] + " = " + makeRandomInt(1342340) + "\n"
+        string += "var " + varNames[1] + " = " + makeRandomInt(12132342311340) + "\n";  
+        string += "var " + varNames[2] + " = " + makeRandomInt(12132340) + "\n"; 
     return string;
     }
 
@@ -162,8 +172,9 @@ function generateTheText(){
         text += indent + "function " + functionName + "(){\n"
         indent += "    "
         generateCode()
+        text += indent + "return " + generateCalculation() + "\n"
         indent = indent.slice(0, indent.length - 4)
-        text += indent + "};\n\n"
+        text += indent + "}\n\n"
     }
 
     function getOperator(){

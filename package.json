@@ -3,6 +3,7 @@
   "displayName": "monkeyType",
   "description": "Insert random stuff to your precious editor. Because... Ok.",
   "version": "0.0.1",
+  "publisher": "Chabadabra",
   "engines": {
     "vscode": "^1.72.0"
   },
@@ -10,13 +11,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:monkeyType.helloWorld"
+    "onCommand:monkeyType.monkey"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "monkeyType.helloWorld",
-      "title": "Hello World"
+      "command": "monkeyType.monkey",
+      "title": "Let the Monkeys Type!"
     }]
   },
   "scripts": {
