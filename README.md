@@ -1,6 +1,6 @@
 ## Features
 
-With the Command "helloWorld" it writes very Beautiful Software.
+Execute the Command "monkey" and it writes very Beautiful Software in Javascript, like a Random Monkey with very good training.
 
 ## Requirements
 
