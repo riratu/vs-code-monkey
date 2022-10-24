@@ -2,9 +2,9 @@
   "name": "monkeyType",
   "displayName": "monkeyType",
   "description": "Insert random stuff to your precious editor. Because... Ok.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Chabadabra",
-  "repository":"https://github.com/riratu/vs-code-monkey",
+  "repository": "https://github.com/riratu/vs-code-monkey",
   "engines": {
     "vscode": "^1.72.0"
   },
