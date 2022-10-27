@@ -5,7 +5,9 @@
 		"checkJs": true,  /* Typecheck .js files. */
 		"lib": [
 			"ES2020"
-		]
+		],
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
 	},
 	"exclude": [
 		"node_modules"
